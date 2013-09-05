@@ -61,44 +61,48 @@ class BlogPost extends Page {
 
 
 	public function getCMSFields() {
-		$fields = parent::getCMSFields();
 
-		// Add Publish date fields
-		$fields->insertAfter(
-			$publishDate = DatetimeField::create("PublishDate", _t("BlogPost.PublishDate", "Publish Date")), 
-			"Content"
-		);
-		$publishDate->getDateField()->setConfig("showcalendar", true);
+	  // Assign to variable & pass for PHP <= 5.4 closure compatibility
+	  $data['TagsMap'] = $this->Parent()->Tags()->map()->toArray();
+	  $data['CategoryMap'] = $this->Parent()->Categories()->map()->toArray();
 
-		// Add Categories & Tags fields
-		$categories = $this->Parent()->Categories()->map()->toArray();
-		$categoriesField = ListboxField::create("Categories", _t("BlogPost.Categories", "Categories"), $categories)
-			->setMultiple(true);
-		$fields->insertAfter($categoriesField, "PublishDate");
-
-		$tags = $this->Parent()->Tags()->map()->toArray();
-		$tagsField = ListboxField::create("Tags", _t("BlogPost.Tags", "Tags"), $tags)
-			->setMultiple(true);
-		$fields->insertAfter($tagsField, "Categories");
-
-		// Add featured image
-		$fields->insertBefore(
-			$uploadField = UploadField::create("FeaturedImage", _t("BlogPost.FeaturedImage", "Featured Image")),
-			"Content"
-		);
-        $uploadField->getValidator()->setAllowedExtensions(array('jpg', 'jpeg', 'png', 'gif'));
-
-		return $fields;
+	  $this->beforeUpdateCMSFields(function($fields) use ($data) {
+	      // Add Publish date fields
+	      $fields->insertAfter(
+				   $publishDate = DatetimeField::create("PublishDate", _t("BlogPost.PublishDate", "Publish Date")), 
+				   "Content"
+				   );
+	      $publishDate->getDateField()->setConfig("showcalendar", true);
+	      
+	      // Add Categories & Tags fields
+	      $categoriesField = ListboxField::create("Categories", _t("BlogPost.Categories", "Categories"), $data['CategoryMap'])
+		->setMultiple(true);
+	      $fields->insertAfter($categoriesField, "PublishDate");
+	      
+	      $tagsField = ListboxField::create("Tags", _t("BlogPost.Tags", "Tags"), $data['TagsMap'])
+		->setMultiple(true);
+	      $fields->insertAfter($tagsField, "Categories");
+	      
+	      // Add featured image
+	      $fields->insertBefore(
+				    $uploadField = UploadField::create("FeaturedImage", _t("BlogPost.FeaturedImage", "Featured Image")),
+				    "Content"
+				    );
+	      $uploadField->getValidator()->setAllowedExtensions(array('jpg', 'jpeg', 'png', 'gif'));
+	    });
+	  
+	  $fields = parent::getCMSFields();
+	  return $fields;
 	}
 
 
 
 	/**
 	 * If no publish date is set, set the date to now.
-	**/
+	 **/
 	public function onBeforeWrite() {
-		parent::onBeforeWrite();
-		if(!$this->PublishDate) $this->setCastedField("PublishDate", time());
+	  parent::onBeforeWrite();
+	  if(!$this->PublishDate) $this->setCastedField("PublishDate", time());
 	}
 
 
@@ -109,17 +113,17 @@ class BlogPost extends Page {
 	 * @param $member Member|null
 	 *
 	 * @return boolean
-	**/
+	 **/
 	public function canView($member = null) {
-		if(!parent::canView($member)) return false;
+	  if(!parent::canView($member)) return false;
 
-		if($this->PublishDate) {
-			$publishDate = $this->dbObject("PublishDate");
-			if($publishDate->InFuture() && !Permission::checkMember($member, "VIEW_DRAFT_CONTENT")) {
-				return false;
-			}
-		}
-		return true;
+	  if($this->PublishDate) {
+	    $publishDate = $this->dbObject("PublishDate");
+	    if($publishDate->InFuture() && !Permission::checkMember($member, "VIEW_DRAFT_CONTENT")) {
+	      return false;
+	    }
+	  }
+	  return true;
 	}
 
 
@@ -130,9 +134,9 @@ class BlogPost extends Page {
 	 * @param $wordCount int - number of words to display
 	 *
 	 * @return string 
-	**/
+	 **/
 	public function getExcerpt($wordCount = 30) {
-		return $this->dbObject("Content")->LimitWordCount($wordCount);
+	  return $this->dbObject("Content")->LimitWordCount($wordCount);
 	}
 
 
@@ -143,17 +147,17 @@ class BlogPost extends Page {
 	 * @param $type string day|month|year
 	 *
 	 * @return string URL
-	**/
+	 **/
 	public function getMonthlyArchiveLink($type = "day") {
-		$date = $this->dbObject("PublishDate");
-		$year = $date->format("Y");
-		if($type != "year") {
-			if($type == "day") {
-				return Controller::join_links($this->Parent()->Link("archive"), $date->format("Y"), $date->format("m"), $date->format("d"));
-			}
-			return Controller::join_links($this->Parent()->Link("archive"), $date->format("Y"), $date->format("m"));
-		}
-		return Controller::join_links($this->Parent()->Link("archive"), $date->format("Y"));
+	  $date = $this->dbObject("PublishDate");
+	  $year = $date->format("Y");
+	  if($type != "year") {
+	    if($type == "day") {
+	      return Controller::join_links($this->Parent()->Link("archive"), $date->format("Y"), $date->format("m"), $date->format("d"));
+	    }
+	    return Controller::join_links($this->Parent()->Link("archive"), $date->format("Y"), $date->format("m"));
+	  }
+	  return Controller::join_links($this->Parent()->Link("archive"), $date->format("Y"));
 	}
 
 
@@ -162,10 +166,10 @@ class BlogPost extends Page {
 	 * Returns a yearly archive link for the current blog post.
 	 *
 	 * @return string URL
-	**/
+	 **/
 	public function getYearlyArchiveLink() {
-		$date = $this->dbObject("PublishDate");
-		return Controller::join_links($this->Parent()->Link("archive"), $date->format("Y"));
+	  $date = $this->dbObject("PublishDate");
+	  return Controller::join_links($this->Parent()->Link("archive"), $date->format("Y"));
 	}
 
 }
@@ -178,7 +182,7 @@ class BlogPost extends Page {
  * @subpackage blog
  *
  * @author Michael Strong <micmania@hotmail.co.uk>
-**/
+ **/
 class BlogPost_Controller extends Page_Controller {
 	
 }
