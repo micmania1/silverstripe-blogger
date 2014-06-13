@@ -34,6 +34,8 @@ class Blog extends Page {
 
 	public function getCMSFields() {
 		$this->beforeUpdateCMSFields(function($fields) {
+
+			$fields->insertBefore(new Tab('BlogPosts'), 'Main');
 		
 			$posts = $this->getBlogPosts();
 			$excluded = $this->getExcludedSiteTreeClassNames();
