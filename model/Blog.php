@@ -34,6 +34,11 @@ class Blog extends Page {
 
 	public function getCMSFields() {
 		$this->beforeUpdateCMSFields(function($fields) {
+
+			// Sets Blog Posts tab 1st once published
+			if ($this->isPublished()) {
+				$fields->insertBefore(new Tab('BlogPosts'), 'Main');
+			}
 		
 			$posts = $this->getBlogPosts();
 			$excluded = $this->getExcludedSiteTreeClassNames();
