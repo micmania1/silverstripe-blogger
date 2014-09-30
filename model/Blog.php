@@ -272,7 +272,7 @@ class Blog_Controller extends Page_Controller {
 	**/
 	public function rss() {
 		$rss = new RSSFeed($this->getBlogPosts(), $this->Link(), $this->MetaDescription, $this->MetaTitle);
-		$this->extend('updateRSS',$rss);
+		$this->extend('updateRss', $rss);
 		return $rss->outputToBrowser();
 	}
 
