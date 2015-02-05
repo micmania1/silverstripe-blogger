@@ -69,11 +69,6 @@ class Blog extends Page {
 		});
 		
 		$fields = parent::getCMSFields();
-
-		// Ensure we're using the BlogPost GridField config and not Lumberjack's
-		$gridField = $fields->dataFieldByName('ChildPages');
-		$gridField->setConfig(GridFieldConfig_BlogPost::create());
-
 		return $fields;
 	}
 
@@ -138,6 +133,17 @@ class Blog extends Page {
 	 */
 	public function getLumberjackTitle() {
 		return _t('Blog.LumberjackTitle', 'Blog Posts');
+	}
+
+
+
+	/**
+	 * This overwrites lumberjacks default gridfield config.
+	 *
+	 * @return GridFieldConfig
+	 */
+	public function getLumberjackGridFieldConfig() {
+		return GridFieldConfig_Blog::create();
 	}
 
 }
