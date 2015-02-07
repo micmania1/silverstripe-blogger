@@ -140,6 +140,16 @@ class Blog extends Page {
 		return _t('Blog.LumberjackTitle', 'Blog Posts');
 	}
 
+
+	/**
+	 * Provides Lumberjac with the relevant GridFieldConfig.
+	 *
+	 * @return GridFieldConfig
+	 */
+	public function getLumberjackGridFieldConfig() {
+		return GridFieldConfig_BlogPost::create();
+	}
+
 }
 
 
