@@ -9,11 +9,11 @@
  * @author Michael Strong <github@michaelstrong.co.uk>
 **/
 class GridFieldConfig_BlogPost extends GridFieldConfig_Lumberjack {
-	
+
 	public function __construct($itemsPerPage = null) {
 		parent::__construct($itemsPerPage);
-		$this->removeComponentsByType('GridFieldSiteTreeStatus');
-		$this->addComponent(new GridFieldBlogPostStatus());
+		$this->removeComponentsByType('GridFieldSiteTreeState');
+		$this->addComponent(new GridFieldBlogPostState());
 	}
 
 }
