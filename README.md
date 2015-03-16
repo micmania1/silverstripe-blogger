@@ -31,7 +31,8 @@ composer require micmania1/silverstripe-blog:1.0.*
 * Filter blog posts by category
 * Filter blog posts by tag
 * Full blog Archive by Year, month or day
-* 4 widgets included (category listing, tag listing, archive & recent posts).
+* 4 widgets included (category listing, tag listing, archive & recent posts). [[How to Install]](https://github.com/silverstripe/silverstripe-widgets/blob/master/README.md)
+* Article comments support [[How to Install]](https://github.com/silverstripe/silverstripe-comments/blob/master/docs/en/Installing.md)
 * Publish Date - Set a blog post to publish in the future.
 * Custom GridField components for quickly adding new objects.
 * RSS Feed of the blog
