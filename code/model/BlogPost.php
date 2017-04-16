@@ -58,40 +58,57 @@ class BlogPost extends Page {
 
 
 	public function getCMSFields() {
+		Requirements::css(BLOGGER_DIR . '/css/cms.css');
 
 		$self =& $this;
 		$this->beforeUpdateCMSFields(function($fields) use ($self) {
-			// Add Publish date fields
-			$fields->insertAfter(
-				$publishDate = DatetimeField::create("PublishDate", _t("BlogPost.PublishDate", "Publish Date")), 
-				"Content"
-			);
-			$publishDate->getDateField()->setConfig("showcalendar", true);
-
-			// Add Categories & Tags fields
-			$categoriesField = ListboxField::create(
-				"Categories", 
-				_t("BlogPost.Categories", "Categories"), 
-				$self->Parent()->Categories()->map()->toArray()
-			)->setMultiple(true);
-			$fields->insertAfter($categoriesField, "PublishDate");
-
-			$tagsField = ListboxField::create(
-				"Tags", 
-				_t("BlogPost.Tags", "Tags"), 
-				$self->Parent()->Tags()->map()->toArray()
-			)->setMultiple(true);
-			$fields->insertAfter($tagsField, "Categories");
 
 			// Add featured image
-			$fields->insertBefore(
+			$fields->insertAfter(
 				$uploadField = UploadField::create("FeaturedImage", _t("BlogPost.FeaturedImage", "Featured Image")),
 				"Content"
 			);
 			$uploadField->getValidator()->setAllowedExtensions(array('jpg', 'jpeg', 'png', 'gif'));
+
+			// We're going to hide MenuTitle - Its not needed in blog posts.
+			$fields->push(HiddenField::create('MenuTitle'));
+
+			// We're going to add the url segment to sidebar so we're making it a little lighter
+			$urlSegment = $fields->dataFieldByName('URLSegment');
+			$urlSegment->setURLPrefix('/' . Director::makeRelative($self->Parent()->Link()));
+
+			// Remove the MenuTitle and URLSegment from the main tab
+			$fields->removeFieldsFromTab('Root.Main', array(
+				'MenuTitle',
+				'URLSegment',
+			));
+
+			// Build up our sidebar
+			$options = BlogAdminSidebar::create(
+				$publishDate = DatetimeField::create("PublishDate", _t("BlogPost.PublishDate", "Publish Date")),
+				$urlSegment,
+				ListboxField::create(
+					"Categories",
+					_t("BlogPost.Categories", "Categories"),
+					$self->Parent()->Categories()->map()->toArray()
+				)->setMultiple(true),
+				ListboxField::create(
+					"Tags",
+					_t("BlogPost.Tags", "Tags"),
+					$self->Parent()->Tags()->map()->toArray()
+				)->setMultiple(true)
+			)->setTitle('Post Options');
+			$publishDate->getDateField()->setConfig("showcalendar", true);
+
+			// Insert it before the TabSet
+			$fields->insertBefore($options, 'Root');
 		});
 
 		$fields = parent::getCMSFields();
+
+		// We need to render an outer template to deal with our custom layout
+		$fields->fieldByName('Root')->setTemplate('TabSet_holder');
+
 		return $fields;
 	}
 
