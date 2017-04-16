@@ -4,7 +4,9 @@
     "keywords": ["silverstripe", "blog", "news"],
     "type": "silverstripe-module",
     "require": {
-        "silverstripe/cms": "~3.1"
+        "silverstripe/cms": "~3.1",
+	    "micmania1/silverstripe-lumberjack": "1.0.*@stable",
+        "micmania1/simple_blog": "*"
     },
     "license": "BSD-2-Clause",
     "authors": [

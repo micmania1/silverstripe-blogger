@@ -1,15 +1,33 @@
-language: php 
+language: php
 
-php: 
-  - 5.3
+php:
+  - 5.4
 
 env:
-  - DB=MYSQL CORE_RELEASE=3.1
+  global:
+    - DB=MYSQL CORE_RELEASE=3.1
+  matrix:
+    - CORE_RELEASE=master
 
 matrix:
   include:
+    - php: 5.5
+      env: DB=MYSQL
+    - php: 5.6
+      env: DB=MYSQL
     - php: 5.4
-      env: DB=MYSQL CORE_RELEASE=3.1
+      env: DB=MYSQL
+    - php: 5.3
+      env: DB=MYSQL
+    - php: hhvm-nightly
+      env: DB=MYSQL
+      before_install:
+        - sudo apt-get update -qq
+        - sudo apt-get install -y tidy
+  allow_failures:
+    - php: 5.4
+      env: DB=MYSQL CORE_RELASE=master
+
 
 before_script:
   - phpenv rehash
@@ -17,5 +35,5 @@ before_script:
   - php ~/travis-support/travis_setup.php --source `pwd` --target ~/builds/ss
   - cd ~/builds/ss
 
-script: 
+script:
   - phpunit silverstripe-blog/tests/
